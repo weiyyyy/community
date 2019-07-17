@@ -1,9 +1,10 @@
 package com.weiyang.community.controller;
 
 
-import com.weiyang.community.dto.PaginationDTO;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.weiyang.community.dto.QuestionDTO;
-import com.weiyang.community.mapper.QuestionMapper;
 import com.weiyang.community.mapper.UserMapper;
 import com.weiyang.community.model.Question;
 import com.weiyang.community.model.User;
@@ -27,10 +28,8 @@ public class IndexController {
     @GetMapping("/")
     public String index(HttpServletRequest request,
                         Model model,
-                        @RequestParam(name = "page",defaultValue = "1") Integer page,
-                        @RequestParam(name = "size",defaultValue = "5") Integer size
-
-    ) {
+                        @RequestParam(defaultValue = "1",value = "pageNum") Integer pageNum
+                        ) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length != 0) {
             for (Cookie cookie :
@@ -45,8 +44,10 @@ public class IndexController {
                 }
             }
         }
-        PaginationDTO pagination = questionService.list(page,size);
-        model.addAttribute("pagination",pagination);
+        PageHelper.startPage(pageNum,5);
+        List<QuestionDTO> list = questionService.getAll();
+        PageInfo<QuestionDTO> pageInfo = new PageInfo<>(list);
+        model.addAttribute("pageInfo",pageInfo);
         return "index";
     }
 

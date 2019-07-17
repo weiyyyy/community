@@ -1,7 +1,7 @@
 package com.weiyang.community.service;
 
 
-import com.weiyang.community.dto.PaginationDTO;
+import com.github.pagehelper.PageHelper;
 import com.weiyang.community.dto.QuestionDTO;
 import com.weiyang.community.mapper.QuestionMapper;
 import com.weiyang.community.mapper.UserMapper;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class QuestionService {
@@ -22,11 +23,11 @@ public class QuestionService {
     UserMapper userMapper;
 
 
-    public PaginationDTO list(Integer page, Integer size) {
-        Integer offset = size*(page-1);
-        List<Question> questions = questionMapper.list(offset,size);
+
+
+   /* public List<QuestionDTO> list( ) {
+        List<Question> questions = questionMapper.list();
         List<QuestionDTO> questionDTOList = new ArrayList<>();
-        PaginationDTO paginationDTO = new PaginationDTO();
         for (Question question : questions) {
             User user = userMapper.findById(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
@@ -34,9 +35,11 @@ public class QuestionService {
             questionDTO.setUser(user);
             questionDTOList.add(questionDTO);
         }
-        paginationDTO.setQuestions(questionDTOList);
-        Integer totalCount = questionMapper.count();
+        return questionDTOList;
+    }*/
 
-        return paginationDTO;
+    public List<QuestionDTO> getAll() {
+
+        return questionMapper.list();
     }
 }
