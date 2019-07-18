@@ -3,6 +3,7 @@ package com.weiyang.community.service;
 
 import com.github.pagehelper.PageHelper;
 import com.weiyang.community.dto.QuestionDTO;
+import com.weiyang.community.dto.QuestionUserDTO;
 import com.weiyang.community.mapper.QuestionMapper;
 import com.weiyang.community.mapper.UserMapper;
 import com.weiyang.community.model.Question;
@@ -11,9 +12,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class QuestionService {
@@ -22,7 +21,11 @@ public class QuestionService {
     @Autowired
     UserMapper userMapper;
 
-
+    public List<QuestionDTO> list(Long userId,Integer pageNum,Integer pageSize){
+        PageHelper.startPage(pageNum,pageSize);
+        List<QuestionDTO> questionDTOS = questionMapper.listByUserId(userId);
+        return questionDTOS;
+    }
 
 
    /* public List<QuestionDTO> list( ) {
@@ -41,5 +44,15 @@ public class QuestionService {
     public List<QuestionDTO> getAll() {
 
         return questionMapper.list();
+    }
+
+    public QuestionUserDTO getById(Long id) {
+        Question question=questionMapper.getById(id);
+        QuestionUserDTO questionUserDTO = new QuestionUserDTO();
+        BeanUtils.copyProperties(question,questionUserDTO);
+        User user = userMapper.findById(question.getCreator());
+        questionUserDTO.setUser(user);
+        return questionUserDTO;
+
     }
 }
