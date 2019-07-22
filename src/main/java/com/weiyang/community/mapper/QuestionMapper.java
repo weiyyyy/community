@@ -2,25 +2,53 @@ package com.weiyang.community.mapper;
 
 import com.weiyang.community.dto.QuestionDTO;
 import com.weiyang.community.model.Question;
-import org.apache.ibatis.annotations.*;
+import com.weiyang.community.model.QuestionExample;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
 public interface QuestionMapper {
-    @Insert("insert into question(title,description,gmt_create,gmt_modified,creator,tag) values(#{title},#{description},#{gmtCreate},#{gmtModified},#{creator},#{tag})")
-    void creat(Question question);
+
+    long countByExample(QuestionExample example);
 
 
-    @Select("select * FROM question ,user ")
-    List<QuestionDTO> list();
+    int deleteByExample(QuestionExample example);
 
-    @Select("select q.title,q.description,q.comment_count,q.view_count,q.gmt_create,u.avatar_url FROM question AS q,user AS u WHERE q.creator=#{userId} ")
-    List<QuestionDTO> listByUserId(@Param("userId") Long userId );
 
-    @Select("select * from question where id=#{id}")
-    Question getById(@Param("id") Long id);
+    int deleteByPrimaryKey(Integer id);
 
-    @Update("update question set title=#{title},description=#{description},gmt_modified=#{gmtModified},tag=#{tag} where  id=#{id}")
-    void update(Question question);
+
+    int insert(Question record);
+
+
+    int insertSelective(Question record);
+
+
+    List<Question> selectByExampleWithBLOBs(QuestionExample example);
+
+
+    List<QuestionDTO> selectByExample(QuestionExample example);
+
+
+    Question selectByPrimaryKey(Long id);
+
+
+    int updateByExampleSelective(@Param("record") Question record, @Param("example") QuestionExample example);
+
+
+    int updateByExampleWithBLOBs(@Param("record") Question record, @Param("example") QuestionExample example);
+
+
+    int updateByExample(@Param("record") Question record, @Param("example") QuestionExample example);
+
+
+    int updateByPrimaryKeySelective(Question record);
+
+
+    int updateByPrimaryKeyWithBLOBs(Question record);
+
+
+    int updateByPrimaryKey(Question record);
+
+    List<QuestionDTO> getAll();
 }

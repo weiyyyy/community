@@ -4,7 +4,9 @@ package com.weiyang.community.service;
 import com.github.pagehelper.PageHelper;
 import com.weiyang.community.dto.QuestionDTO;
 import com.weiyang.community.dto.QuestionUserDTO;
+import com.weiyang.community.exception.CustomizeErrorCode;
 import com.weiyang.community.exception.CustomizeException;
+import com.weiyang.community.mapper.QuestionExtMapper;
 import com.weiyang.community.mapper.QuestionMapper;
 import com.weiyang.community.mapper.UserMapper;
 import com.weiyang.community.model.Question;
@@ -19,13 +21,20 @@ import java.util.List;
 @Service
 public class QuestionService {
     @Autowired
-    QuestionMapper questionMapper;
+    private QuestionMapper questionMapper;
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
+
+    @Autowired
+    private QuestionExtMapper questionExtMapper;
 
     public List<QuestionDTO> list(Long userId,Integer pageNum,Integer pageSize){
         PageHelper.startPage(pageNum,pageSize);
-        List<QuestionDTO> questionDTOS = questionMapper.listByUserId(userId);
+
+        QuestionExample questionExample = new QuestionExample();
+        questionExample.createCriteria()
+                .andCreatorEqualTo(userId);
+        List<QuestionDTO> questionDTOS = questionMapper.selectByExample(questionExample);
         return questionDTOS;
     }
 
@@ -34,7 +43,7 @@ public class QuestionService {
         List<Question> questions = questionMapper.list();
         List<QuestionDTO> questionDTOList = new ArrayList<>();
         for (Question question : questions) {
-            User user = userMapper.findById(question.getCreator());
+            User user = userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
             BeanUtils.copyProperties(question,questionDTO);
             questionDTO.setUser(user);
@@ -45,17 +54,18 @@ public class QuestionService {
 
     public List<QuestionDTO> getAll() {
 
-        return questionMapper.list();
+        return questionMapper.getAll();
     }
 
     public QuestionUserDTO getById(Long id) {
-        Question question=questionMapper.getById(id);
+
+        Question question=  questionMapper.selectByPrimaryKey(id);
         if (question==null){
-            throw new CustomizeException("你找的问题不存在，请重新查找");
+            throw new CustomizeException(CustomizeErrorCode.QUSETION_NOT_FOUND);
         }
         QuestionUserDTO questionUserDTO = new QuestionUserDTO();
         BeanUtils.copyProperties(question,questionUserDTO);
-        User user = userMapper.findById(question.getCreator());
+        User user = userMapper.selectByPrimaryKey(question.getCreator());
         questionUserDTO.setUser(user);
         return questionUserDTO;
 
@@ -67,7 +77,7 @@ public class QuestionService {
             //创建
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(question.getGmtModified());
-            questionMapper.creat(question);
+            questionMapper.insert(question);
         }else{
             //更新
             Question updateQuestion = new Question();
@@ -76,11 +86,25 @@ public class QuestionService {
             updateQuestion.setDescription(question.getDescription());
             updateQuestion.setTag(question.getTag());
             QuestionExample example = new QuestionExample();
-            example.createCriteria()
-                    .andIdEqualTo(question.getId());
-
-
-            questionMapper.update(question);
+            example.createCriteria().andIdEqualTo(question.getId());
+            int update = questionMapper.updateByExampleSelective(updateQuestion, example);
+            if (update!=1){
+                throw new CustomizeException(CustomizeErrorCode.QUSETION_NOT_FOUND);
+            }
         }
+    }
+
+    public void incView(Long id) {
+/*        Question question = questionMapper.selectByPrimaryKey(id);
+        Question updateQuestion = new Question();
+        updateQuestion.setViewCount(question.getViewCount()+1);
+        QuestionExample questionExample = new QuestionExample();
+        questionExample.createCriteria()
+                .andIdEqualTo(id);*/
+        Question question = new Question();
+        question.setId(id);
+        question.setViewCount(1);
+        questionExtMapper.incView(question);
+
     }
 }

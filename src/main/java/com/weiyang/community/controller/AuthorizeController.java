@@ -2,7 +2,6 @@ package com.weiyang.community.controller;
 
 import com.weiyang.community.dto.AccessTtokenDTO;
 import com.weiyang.community.dto.GithubUser;
-import com.weiyang.community.mapper.UserMapper;
 import com.weiyang.community.model.User;
 import com.weiyang.community.provider.GithubProvider;
 import com.weiyang.community.service.UserService;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
