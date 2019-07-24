@@ -234,7 +234,7 @@ public class UserExample {
             return (Criteria) this;
         }
 
-        public Criteria andIdIn(List<Integer> values) {
+        public Criteria andIdIn(List<Long> values) {
             addCriterion("ID in", values, "id");
             return (Criteria) this;
         }

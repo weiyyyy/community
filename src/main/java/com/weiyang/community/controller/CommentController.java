@@ -1,18 +1,20 @@
 package com.weiyang.community.controller;
 
+import com.weiyang.community.dto.CommentCreateDTO;
 import com.weiyang.community.dto.CommentDTO;
 import com.weiyang.community.dto.ResultDTO;
+import com.weiyang.community.enums.CommentTypeEnum;
 import com.weiyang.community.exception.CustomizeErrorCode;
 import com.weiyang.community.mapper.CommentMapper;
 import com.weiyang.community.model.Comment;
 import com.weiyang.community.model.User;
 import com.weiyang.community.service.CommentService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 public class CommentController {
@@ -23,16 +25,19 @@ public class CommentController {
     private CommentService commentService;
 
     @PostMapping(value = "/comment")
-    public Object post(@RequestBody CommentDTO commentDTO,
-                       HttpServletRequest request){
+    public Object post(@RequestBody CommentCreateDTO commentCreateDTO,
+                       HttpServletRequest request) {
         User user = (User) request.getSession().getAttribute("user");
-        if (user==null){
+        if (user == null) {
             return ResultDTO.errorOf(CustomizeErrorCode.NO_LOGIN);
         }
+        if (commentCreateDTO == null || StringUtils.isBlank(commentCreateDTO.getContent())) {
+            return ResultDTO.errorOf(CustomizeErrorCode.COMMENT_IS_EMPTY);
+        }
         Comment comment = new Comment();
-        comment.setParentId(commentDTO.getParentId());
-        comment.setContent(commentDTO.getContent());
-        comment.setType(commentDTO.getType());
+        comment.setParentId(commentCreateDTO.getParentId());
+        comment.setContent(commentCreateDTO.getContent());
+        comment.setType(commentCreateDTO.getType());
         comment.setGmtModified(System.currentTimeMillis());
         comment.setGmtCreate(System.currentTimeMillis());
         comment.setCommentator(user.getId());
@@ -40,5 +45,11 @@ public class CommentController {
         commentService.insert(comment);
         return ResultDTO.okOf();
 
+    }
+
+    @GetMapping("/comment/{id}")
+    public ResultDTO<List<CommentDTO>> comments(@PathVariable(name = "id")Long id){
+        List<CommentDTO> commentDTOS = commentService.listByTargetId(id, CommentTypeEnum.COMMENT);
+        return ResultDTO.okOf(commentDTOS);
     }
 }
