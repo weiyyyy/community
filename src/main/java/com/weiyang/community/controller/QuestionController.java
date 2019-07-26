@@ -1,6 +1,7 @@
 package com.weiyang.community.controller;
 
 import com.weiyang.community.dto.CommentDTO;
+import com.weiyang.community.dto.QuestionDTO;
 import com.weiyang.community.dto.QuestionUserDTO;
 import com.weiyang.community.enums.CommentTypeEnum;
 import com.weiyang.community.service.CommentService;
@@ -24,13 +25,13 @@ public class QuestionController {
     @GetMapping("/question/{id}")
     public String question(@PathVariable(name = "id") Long id, Model model) {
         QuestionUserDTO questionUserDTO = questionService.getById(id);
-
+        List<QuestionUserDTO> relatedQuestions = questionService.selectRelated(questionUserDTO);
         List<CommentDTO> comments= commentService.listByTargetId(id, CommentTypeEnum.QUESTION);
 
         questionService.incView(id);
         model.addAttribute("question", questionUserDTO);
         model.addAttribute("comments", comments);
-
+        model.addAttribute("relatedQuestions",relatedQuestions);
         return "question";
     }
 }

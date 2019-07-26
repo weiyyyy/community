@@ -12,11 +12,15 @@ import com.weiyang.community.mapper.UserMapper;
 import com.weiyang.community.model.Question;
 import com.weiyang.community.model.QuestionExample;
 import com.weiyang.community.model.User;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
@@ -29,6 +33,7 @@ public class QuestionService {
     private QuestionExtMapper questionExtMapper;
 
     public List<QuestionDTO> list(Long userId,Integer pageNum,Integer pageSize){
+
         PageHelper.startPage(pageNum,pageSize);
 
         QuestionExample questionExample = new QuestionExample();
@@ -109,5 +114,24 @@ public class QuestionService {
         question.setViewCount(1);
         questionExtMapper.incView(question);
 
+    }
+
+    public List<QuestionUserDTO> selectRelated(QuestionUserDTO queryDTO) {
+        if (StringUtils.isBlank(queryDTO.getTag())){
+            return new ArrayList<>();
+        }
+        String[] tags = StringUtils.split(queryDTO.getTag(), ",");
+        String regexTag = Arrays.stream(tags).collect(Collectors.joining("|"));
+        Question question = new Question();
+        question.setId(queryDTO.getId());
+        question.setTag(regexTag);
+
+        List<Question> questions = questionExtMapper.selectRelated(question);
+        List<QuestionUserDTO> questionUserDTOS = questions.stream().map(q -> {
+            QuestionUserDTO questionDTO = new QuestionUserDTO();
+            BeanUtils.copyProperties(q,questionDTO);
+            return questionDTO;
+        }).collect(Collectors.toList());
+        return questionUserDTOS;
     }
 }

@@ -1,8 +1,16 @@
+/**
+ * Created by codedrinker on 2019/6/1.
+ */
+
+/**
+ * 提交回复
+ */
 function post() {
     var questionId = $("#question_id").val();
     var content = $("#comment_content").val();
     comment2target(questionId, 1, content);
 }
+
 function comment2target(targetId, type, content) {
     if (!content) {
         alert("不能回复空内容~~~");
@@ -37,16 +45,14 @@ function comment2target(targetId, type, content) {
     });
 }
 
-
 function comment(e) {
-    debugger;
     var commentId = e.getAttribute("data-id");
     var content = $("#input-" + commentId).val();
     comment2target(commentId, 2, content);
 }
 
 /**
- *展开二级评论
+ * 展开二级评论
  */
 function collapseComments(e) {
     var id = e.getAttribute("data-id");
@@ -107,6 +113,22 @@ function collapseComments(e) {
                 e.setAttribute("data-collapse", "in");
                 e.classList.add("active");
             });
+        }
+    }
+}
+
+function showSelectTag() {
+    $("#select-tag").show();
+}
+
+function selectTag(e) {
+    var value = e.getAttribute("data-tag");
+    var previous = $("#tag").val();
+    if (previous.indexOf(value) == -1) {
+        if (previous) {
+            $("#tag").val(previous + ',' + value);
+        } else {
+            $("#tag").val(value);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.weiyang.community.controller;
 
+import com.weiyang.community.cache.TagCache;
 import com.weiyang.community.dto.QuestionUserDTO;
 import com.weiyang.community.mapper.QuestionMapper;
 import com.weiyang.community.mapper.UserMapper;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.swing.text.html.HTML;
 
 @Controller
 public class PublishController {
@@ -22,7 +24,8 @@ public class PublishController {
     @Autowired
     private QuestionService questionService;
     @GetMapping("/publish")
-    public String publish() {
+    public String publish(Model model) {
+        model.addAttribute("tags", TagCache.get());
         return "publish";
     }
 
@@ -34,6 +37,7 @@ public class PublishController {
         model.addAttribute("description", question.getDescription());
         model.addAttribute("tag", question.getTag());
         model.addAttribute("id",question.getId());
+        model.addAttribute("tags", TagCache.get());
         return "publish";
     }
 
@@ -49,6 +53,7 @@ public class PublishController {
         model.addAttribute("title", title);
         model.addAttribute("description", description);
         model.addAttribute("tag", tag);
+        model.addAttribute("tags", TagCache.get());
         if (title == null || title == "") {
             model.addAttribute("error", "标题不能为空");
             return "publish";

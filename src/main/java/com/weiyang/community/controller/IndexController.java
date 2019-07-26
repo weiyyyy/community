@@ -26,7 +26,6 @@ public class IndexController {
                         @RequestParam(defaultValue = "1",value = "pageNum") Integer pageNum,
                         @RequestParam(defaultValue = "5",value = "pageSize") Integer pageSize
                         ) {
-
         PageHelper.startPage(pageNum,pageSize);
         List<QuestionDTO> list = questionService.getAll();
         PageInfo<QuestionDTO> pageInfo = new PageInfo<>(list);
