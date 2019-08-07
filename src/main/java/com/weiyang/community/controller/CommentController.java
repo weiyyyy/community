@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -25,18 +26,18 @@ public class CommentController {
     private CommentService commentService;
 
     @PostMapping(value = "/comment")
-    public Object post(@RequestBody CommentCreateDTO commentCreateDTO,
+    public Object post(@RequestBody @Valid CommentCreateDTO commentCreateDTO,
                        HttpServletRequest request) {
         User user = (User) request.getSession().getAttribute("user");
         if (user == null) {
             return ResultDTO.errorOf(CustomizeErrorCode.NO_LOGIN);
         }
         if (commentCreateDTO == null || StringUtils.isBlank(commentCreateDTO.getContent())) {
-            return ResultDTO.errorOf(CustomizeErrorCode.COMMENT_IS_EMPTY);
+            return ResultDTO.errorOf(CustomizeErrorCode.CONTENT_IS_EMPTY);
         }
         Comment comment = new Comment();
-        comment.setParentId(commentCreateDTO.getParentId());
         comment.setContent(commentCreateDTO.getContent());
+        comment.setParentId(commentCreateDTO.getParentId());
         comment.setType(commentCreateDTO.getType());
         comment.setGmtModified(System.currentTimeMillis());
         comment.setGmtCreate(System.currentTimeMillis());
@@ -44,6 +45,7 @@ public class CommentController {
         comment.setLikeCount(0L);
         commentService.insert(comment);
         return ResultDTO.okOf();
+
 
     }
 

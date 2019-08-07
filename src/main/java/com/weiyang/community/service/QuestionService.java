@@ -66,7 +66,7 @@ public class QuestionService {
 
         Question question=  questionMapper.selectByPrimaryKey(id);
         if (question==null){
-            throw new CustomizeException(CustomizeErrorCode.QUSETION_NOT_FOUND);
+            throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
         }
         QuestionUserDTO questionUserDTO = new QuestionUserDTO();
         BeanUtils.copyProperties(question,questionUserDTO);
@@ -97,7 +97,7 @@ public class QuestionService {
             example.createCriteria().andIdEqualTo(question.getId());
             int update = questionMapper.updateByExampleSelective(updateQuestion, example);
             if (update!=1){
-                throw new CustomizeException(CustomizeErrorCode.QUSETION_NOT_FOUND);
+                throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
         }
     }

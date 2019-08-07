@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -28,7 +31,7 @@ public class AuthorizeController {
     @Value("${github.client.secrt}")
     private String clientSecret;
 
-    @Value("${github.redirect.url}")
+    @Value("${github.redirect.uri}")
     private String redirecturi;
 
 
@@ -75,5 +78,9 @@ public class AuthorizeController {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
         return "redirect:/";
+
+
+
+
     }
 }
